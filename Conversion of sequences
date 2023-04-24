@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+#export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.10/site-packages/
+import RNA
+import numpy as np
+import pandas as pd
+
+####### Leer archivo  que es la salida de RNAz
+
+with open(r'file_sequences.txt', 'r') as fp:
+    # read every line
+     line = fp.readlines()
+     desired_lines = line[0::1] #if you want it read every fourth line starting from the third line change [0::1] to [3::4]
+
+####### Save the secondary structures of dot-bracket in a file
+sequences = [seq.strip() for seq in desired_lines]
+print(sequences)
+print(len(sequences))
+np.savetxt("file_1.csv", sequences, delimiter=",", fmt='%s', header='Consensus')
+
+####### Convert the structure of dot-bracket to the other notations of interest
+for s in sequences:
+     HIT=[]
+     Shapiro=[]
+     Tree=[]
+     for s in sequences:
+         HIT.append(RNA.db_to_tree_string(s, RNA.STRUCTURE_TREE_HIT))
+         Shapiro.append(RNA.db_to_tree_string(s, RNA.STRUCTURE_TREE_SHAPIRO))
+         Tree.append(RNA.db_to_tree_string(s, RNA.STRUCTURE_TREE_EXPANDED))
+
+# I did this to check that the conversion was being done properly
+#print("Estructure HIT:\n", HIT)
+print(len(HIT))
+#print("Estructure Shapiro:\n", Shapiro)
+print(len(Shapiro))
+#print("Estructure Expanded Tree:\n",Tree)
+print("tree:", len(Tree))
+
+####### Save all the different secondary structures in a .csv file
+np.savetxt("file_1_representations.csv", np.c_[secuencias, HIT, Shapiro, Tree], delimiter=",", fmt='%s', header='Consensus,HIT,Shapiro,Tree')
+
+representations = pd.read_csv("file_1_representations.csv")
+representations.head()
